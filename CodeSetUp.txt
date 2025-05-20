@@ -1,0 +1,39 @@
+## FINAL SOURCE CODE SETUP
+
+- Kindly follow the following instruction to setup the final source code, down below, there is Setup video you must watch till the end to understand what you have got and how to run the project
+
+# Setup Vudeo Link
+
+- URL: https://youtu.be/a6MU06oD2kY?si=Gx37OZ5yoiHQH_Oi
+
+📌 Timestamps
+00:00:00 ➤ Introduction
+00:00:25 ➤ Overview
+00:04:59 ➤ Features Demo
+00:08:26 ➤ Mobile Support
+00:09:36 ➤ Starter File
+00:10:40 ➤ Final Source Code
+00:18:37 ➤ Enviroment Veriables
+00:18:54 ➤ Create Token
+00:23:35 ➤ Testing Live
+00:28:31 ➤ Hostinger Deployment
+
+
+####  Hostinger Deployment Online
+
+```
+  WATCH: Hostinger
+  Get : Discount 75%
+  URL: https://www.hostg.xyz/aff_c?offer_id=6&aff_id=139422
+```
+
+
+## Support EmailID
+
+- EmailID: theblockchaincoders@gmail.com
+
+- If you have any question related to the project, kindly connect to this emailID: (theblockchaincoders@gmail.com) for any help, In the email kindly provide the follow details about the project and your purchased emailID Likes
+
+1. EmailID: Which you have used when you bought the code
+2. Share Project URL: 
+3. Screenshot / Screen recording of error : Error which you are facing
