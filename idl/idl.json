@@ -1,66 +1,305 @@
 {
   "version": "0.1.0",
-  "name": "ico",
+  "name": "scythra_presale",
   "instructions": [
     {
-      "name": "createIcoAta",
+      "name": "initializePresale",
       "accounts": [
-        { "name": "icoAtaForIcoProgram", "isMut": true, "isSigner": false },
-        { "name": "data", "isMut": true, "isSigner": false },
-        { "name": "icoMint", "isMut": false, "isSigner": false },
-        { "name": "icoAtaForAdmin", "isMut": true, "isSigner": false },
-        { "name": "admin", "isMut": true, "isSigner": true },
-        { "name": "systemProgram", "isMut": false, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "rent", "isMut": false, "isSigner": false }
+        {
+          "name": "presaleState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
-      "args": [{ "name": "icoAmount", "type": "u64" }]
-    },
-    {
-      "name": "depositIcoInAta",
-      "accounts": [
-        { "name": "icoAtaForIcoProgram", "isMut": true, "isSigner": false },
-        { "name": "data", "isMut": true, "isSigner": false },
-        { "name": "icoMint", "isMut": false, "isSigner": false },
-        { "name": "icoAtaForAdmin", "isMut": true, "isSigner": false },
-        { "name": "admin", "isMut": true, "isSigner": true },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false }
-      ],
-      "args": [{ "name": "icoAmount", "type": "u64" }]
+      "args": [
+        {
+          "name": "treasury",
+          "type": "publicKey"
+        },
+        {
+          "name": "usdcMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "tokenMint",
+          "type": "publicKey"
+        }
+      ]
     },
     {
       "name": "buyTokens",
       "accounts": [
-        { "name": "icoAtaForIcoProgram", "isMut": true, "isSigner": false },
-        { "name": "data", "isMut": true, "isSigner": false },
-        { "name": "icoMint", "isMut": false, "isSigner": false },
-        { "name": "icoAtaForUser", "isMut": true, "isSigner": false },
-        { "name": "user", "isMut": true, "isSigner": true },
-        { "name": "admin", "isMut": true, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "presaleState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyerUsdcAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "treasuryAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userPurchase",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
       "args": [
-        { "name": "icoAtaForIcoProgramBump", "type": "u8" },
-        { "name": "tokenAmount", "type": "u64" }
+        {
+          "name": "desiredAmount",
+          "type": "u64"
+        }
       ]
+    },
+    {
+      "name": "endPresale",
+      "accounts": [
+        {
+          "name": "presaleState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
     {
-      "name": "Data",
+      "name": "PresaleState",
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "admin", "type": "publicKey" },
-          { "name": "totalTokens", "type": "u64" },
-          { "name": "tokensSold", "type": "u64" }
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "treasury",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdcMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "initialPrice",
+            "type": "u64"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "totalSold",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "hardCap",
+            "type": "u64"
+          },
+          {
+            "name": "maxTokensPerWallet",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserPurchase",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "publicKey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
         ]
       }
     }
   ],
+  "events": [
+    {
+      "name": "PresaleInitialized",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "treasury",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "usdcMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "tokenMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "startTime",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PurchaseEvent",
+      "fields": [
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "cost",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "tier",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "price",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PresaleEnded",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "totalSold",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "endTime",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    }
+  ],
   "errors": [
-    { "code": 6000, "name": "Overflow", "msg": "Arithmetic overflow" },
-    { "code": 6001, "name": "InvalidAdmin", "msg": "Invalid admin" }
-  ]
+    {
+      "code": 6000,
+      "name": "PresaleInactive",
+      "msg": "Presale is not active."
+    },
+    {
+      "code": 6001,
+      "name": "WalletLimitExceeded",
+      "msg": "Purchase exceeds wallet limit."
+    },
+    {
+      "code": 6002,
+      "name": "HardCapExceeded",
+      "msg": "Total tokens sold exceed hard cap."
+    },
+    {
+      "code": 6003,
+      "name": "MathOverflow",
+      "msg": "Math overflow occurred."
+    },
+    {
+      "code": 6004,
+      "name": "UnauthorizedBuyer",
+      "msg": "Buyer is not authorized."
+    },
+    {
+      "code": 6005,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount specified."
+    },
+    {
+      "code": 6006,
+      "name": "InvalidTimestamp",
+      "msg": "Invalid timestamp provided."
+    },
+    {
+      "code": 6007,
+      "name": "AllTiersSold",
+      "msg": "All tiers have been sold."
+    },
+    {
+      "code": 6008,
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury address."
+    },
+    {
+      "code": 6009,
+      "name": "InvalidMint",
+      "msg": "Invalid mint address."
+    }
+  ],
+  "metadata": {
+    "address": "13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"
+  }
 }
