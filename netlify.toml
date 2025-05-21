@@ -1,10 +1,12 @@
 [build]
-  command = "npm run build"
-  publish = "out"
+  command = "npm install && npm run build"
+  publish = ".next"
+  base = "."
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Handle client-side routing
 [[redirects]]

@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clear": "rm -rf node_modules package-lock.json .next out"
+    "clear": "rm -rf node_modules package-lock.json .next"
   },
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
@@ -32,5 +32,8 @@
     "tailwindcss": "^3.3.1",
     "eslint": "8.56.0",
     "eslint-config-next": "13.2.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
