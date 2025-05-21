@@ -35,6 +35,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Ensure we're using the correct output directory
+  distDir: 'out',
 };
 
 module.exports = nextConfig;
