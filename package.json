@@ -4,22 +4,21 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "clear": "rm -rf node_modules package-lock.json .next"
   },
   "dependencies": {
-    "@next/font": "13.2.4",
     "@project-serum/anchor": "^0.26.0",
-    "@solana/spl-token": "^0.1.8",
+    "@solana/spl-token": "^0.3.9",
     "@solana/wallet-adapter-base": "^0.9.26",
     "@solana/wallet-adapter-react": "^0.15.38",
     "@solana/wallet-adapter-react-ui": "^0.9.38",
     "@solana/wallet-adapter-wallets": "^0.19.36",
     "@solana/web3.js": "^1.98.2",
     "buffer": "^6.0.3",
-    "next": "^15.3.1",
+    "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.5.2",
@@ -30,6 +29,8 @@
   "devDependencies": {
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
-    "tailwindcss": "^3.3.1"
+    "tailwindcss": "^3.3.1",
+    "eslint": "8.56.0",
+    "eslint-config-next": "13.2.4"
   }
 }
