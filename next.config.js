@@ -17,26 +17,10 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
-        crypto: false,
-        stream: false,
-        http: false,
-        https: false,
-        zlib: false,
-        path: false,
-        os: false,
       };
     }
     return config;
   },
-  // Disable server-side features
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  // Ensure we're using the correct output directory
-  distDir: 'out',
 };
 
 module.exports = nextConfig;

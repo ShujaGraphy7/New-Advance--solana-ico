@@ -1,13 +1,10 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm run build"
   publish = "out"
-  base = "."
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  NODE_VERSION = "18"
 
 # Handle client-side routing
 [[redirects]]
@@ -15,8 +12,5 @@
   to = "/index.html"
   status = 200
 
-# Cache settings
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate" 
+[[plugins]]
+  package = "@netlify/plugin-nextjs" 
