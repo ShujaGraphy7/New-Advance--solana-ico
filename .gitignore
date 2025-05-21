@@ -26,18 +26,18 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-
-
-.anchor
-.DS_Store
-target
-**/*.rs.bk
-node_modules
-test-ledger
-.yarn
+.env*.local
 
 # vercel
 .vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.idea/
+.vscode/
 
 node_modules
 
@@ -49,3 +49,8 @@ typechain-types
 # Hardhat files
 cache
 artifacts
+
+#contract
+target
+.anchor
+test-ledger
