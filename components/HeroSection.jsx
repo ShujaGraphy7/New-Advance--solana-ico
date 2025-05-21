@@ -23,7 +23,7 @@ const Hero = () => {
 
 
 // Correct usage of PublicKey without `web3`
-const USDC_MINT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT_ADDRESS);
+const USDC_MINT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
 
 const WalletMultiButton = dynamic(
   () =>
@@ -88,7 +88,7 @@ const getUserUSDCBalance = async (publicKey) => {
     );
     
     // Get the associated token account for USDC
-    const usdcMint = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT_ADDRESS);
+    const usdcMint = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
     
     // Find the associated token address
     const [associatedTokenAddress] = await PublicKey.findProgramAddress(
