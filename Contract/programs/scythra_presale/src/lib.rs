@@ -7,7 +7,7 @@ declare_id!("13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"); // Replace with you
 pub const TOKENS_PER_TIER: u64 = 5_000_000;
 pub const TOTAL_TIERS: u64 = 30;
 pub const HARD_CAP: u64 = TOKENS_PER_TIER * TOTAL_TIERS; // 150 million tokens
-pub const INITIAL_PRICE: u64 = 1; // $0.01 in USDC (6 decimals)
+pub const INITIAL_PRICE: u64 = 10_000; // $0.01 in USDC (6 decimals)
 pub const PRICE_INCREASE_BASIS_POINTS: u64 = 2800; // 28% increase
 pub const BASIS_POINTS_DIVISOR: u64 = 10000;
 
@@ -86,6 +86,7 @@ pub mod scythra_presale {
             .ok_or(PresaleError::MathOverflow)?;
         require!(current_tier < TOTAL_TIERS, PresaleError::AllTiersSold);
 
+        // Calculate price based on current tier
         let mut current_price = state.initial_price;
         for _ in 0..current_tier {
             current_price = current_price
@@ -95,7 +96,7 @@ pub mod scythra_presale {
                 .ok_or(PresaleError::MathOverflow)?;
         }
 
-        // Calculate total cost
+        // Calculate total cost with proper decimal handling
         let total_cost = desired_amount
             .checked_mul(current_price)
             .ok_or(PresaleError::MathOverflow)?;
@@ -138,6 +139,19 @@ pub mod scythra_presale {
             owner: state.owner,
             total_sold: state.total_sold,
             end_time: Clock::get()?.unix_timestamp,
+        });
+        
+        Ok(())
+    }
+
+    pub fn reactivate_presale(ctx: Context<OnlyOwner>) -> Result<()> {
+        let state = &mut ctx.accounts.presale_state;
+        require!(!state.active, PresaleError::PresaleActive);
+        state.active = true;
+        
+        emit!(PresaleReactivated {
+            owner: state.owner,
+            reactivation_time: Clock::get()?.unix_timestamp,
         });
         
         Ok(())
@@ -260,6 +274,12 @@ pub struct PresaleEnded {
     pub end_time: i64,
 }
 
+#[event]
+pub struct PresaleReactivated {
+    pub owner: Pubkey,
+    pub reactivation_time: i64,
+}
+
 #[error_code]
 pub enum PresaleError {
     #[msg("Presale is not active.")]
@@ -282,4 +302,6 @@ pub enum PresaleError {
     InvalidTreasury,
     #[msg("Invalid mint address.")]
     InvalidMint,
+    #[msg("Presale is already active.")]
+    PresaleActive,
 }
