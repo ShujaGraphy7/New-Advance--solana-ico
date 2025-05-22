@@ -97,6 +97,22 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "reactivatePresale",
+      "accounts": [
+        {
+          "name": "presaleState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -245,6 +261,21 @@
           "index": false
         }
       ]
+    },
+    {
+      "name": "PresaleReactivated",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "reactivationTime",
+          "type": "i64",
+          "index": false
+        }
+      ]
     }
   ],
   "errors": [
@@ -297,9 +328,14 @@
       "code": 6009,
       "name": "InvalidMint",
       "msg": "Invalid mint address."
+    },
+    {
+      "code": 6010,
+      "name": "PresaleActive",
+      "msg": "Presale is already active."
     }
   ],
   "metadata": {
-    "address": "13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"
+    "address": "2nh36ypUvSfBXy23an9VJSdaBdYypY9FDzECG3LCD4g7"
   }
 }

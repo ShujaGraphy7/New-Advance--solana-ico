@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
-declare_id!("13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"); // Replace with your program ID
+declare_id!("2nh36ypUvSfBXy23an9VJSdaBdYypY9FDzECG3LCD4g7"); // Replace with your program ID
 
 // Constants for tier logic
 pub const TOKENS_PER_TIER: u64 = 5_000_000;

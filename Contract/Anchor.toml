@@ -4,14 +4,14 @@
 seeds = false
 skip-lint = false
 
-[programs.localnet]
-scythra_presale = "13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"
+[programs.devnet]
+scythra_presale = "2nh36ypUvSfBXy23an9VJSdaBdYypY9FDzECG3LCD4g7"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
