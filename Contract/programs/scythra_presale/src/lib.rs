@@ -7,8 +7,8 @@ declare_id!("13LdgyTELwGqBjafbomzqDPcJjwKBthjufSLZSCwDJzn"); // Replace with you
 pub const TOKENS_PER_TIER: u64 = 5_000_000;
 pub const TOTAL_TIERS: u64 = 30;
 pub const HARD_CAP: u64 = TOKENS_PER_TIER * TOTAL_TIERS; // 150 million tokens
-pub const INITIAL_PRICE: u64 = 10_000; // $0.01 in USDC (6 decimals)
-pub const PRICE_INCREASE_BASIS_POINTS: u64 = 2800; // 28% increase
+pub const INITIAL_PRICE: u64 = 100; // $0.01 in USDC (6 decimals)
+pub const PRICE_INCREASE_BASIS_POINTS: u64 = 12800; // 128% (100% + 28% increase)
 pub const BASIS_POINTS_DIVISOR: u64 = 10000;
 
 #[program]

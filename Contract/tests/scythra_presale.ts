@@ -21,8 +21,8 @@ describe("scythra_presale", () => {
   const TOKENS_PER_TIER = new anchor.BN(5_000_000);
   const TOTAL_TIERS = new anchor.BN(30);
   const HARD_CAP = TOKENS_PER_TIER.mul(TOTAL_TIERS); // 150 million tokens
-  const INITIAL_PRICE = new anchor.BN(10_000); // $0.01 in USDC (6 decimals)
-  const PRICE_INCREASE_BASIS_POINTS = new anchor.BN(2800); // 28% increase
+  const INITIAL_PRICE = new anchor.BN(100); // $0.01 in USDC (6 decimals)
+  const PRICE_INCREASE_BASIS_POINTS = new anchor.BN(12800); // 128% (100% + 28% increase)
   const BASIS_POINTS_DIVISOR = new anchor.BN(10000);
 
   let usdcMint: anchor.web3.PublicKey;
@@ -1386,21 +1386,28 @@ describe("scythra_presale", () => {
   it("Verifies 28% compounded price increase per tier", async () => {
     try {
       console.log("\n=== Starting Compounded Price Increase Test ===");
+      console.log("This test verifies that the price increases by exactly 28% (compounded) for each tier");
       
       // Create test wallets for each tier
       const wallets = Array(5).fill(null).map(() => anchor.web3.Keypair.generate());
-      console.log("\nCreated test wallets for each tier");
+      console.log("\nCreated 5 test wallets (one for each tier):");
+      wallets.forEach((wallet, index) => {
+        console.log(`Wallet ${index + 1}: ${wallet.publicKey.toString()}`);
+      });
       
       // Request airdrops for all wallets
+      console.log("\nRequesting SOL airdrops for all wallets...");
       for (const wallet of wallets) {
         const airdropSignature = await provider.connection.requestAirdrop(
           wallet.publicKey,
           2 * anchor.web3.LAMPORTS_PER_SOL
         );
         await waitForConfirmation(airdropSignature);
+        console.log(`Airdrop confirmed for ${wallet.publicKey.toString()}`);
       }
 
       // Create USDC accounts for all wallets
+      console.log("\nCreating USDC accounts for all wallets...");
       const walletUsdcAccounts = await Promise.all(
         wallets.map(wallet => 
           getOrCreateAssociatedTokenAccount(
@@ -1411,8 +1418,13 @@ describe("scythra_presale", () => {
           )
         )
       );
+      console.log("USDC accounts created:");
+      walletUsdcAccounts.forEach((account, index) => {
+        console.log(`Wallet ${index + 1} USDC account: ${account.address.toString()}`);
+      });
 
       // Calculate expected prices for all tiers (up to 30)
+      console.log("\nCalculating expected prices for all tiers (28% compounded increase)...");
       const expectedPrices: anchor.BN[] = [INITIAL_PRICE];
       for (let i = 1; i < 30; i++) {
         const prev = expectedPrices[i - 1];
@@ -1423,10 +1435,18 @@ describe("scythra_presale", () => {
 
       console.log("\nExpected Prices (28% compounded increase):");
       expectedPrices.slice(0, 5).forEach((price, tier) => {
-        console.log(`Tier ${tier}: ${price.toString()} (${price.toNumber() / 10000} USDC)`);
+        const priceInUsdc = price.toNumber() / 10000; // Convert to USDC
+        console.log(`Tier ${tier}: ${price.toString()} ($${priceInUsdc.toFixed(4)} USDC)`);
+        if (tier > 0) {
+          const prevPrice = expectedPrices[tier - 1];
+          const prevPriceInUsdc = prevPrice.toNumber() / 10000;
+          const increase = ((priceInUsdc - prevPriceInUsdc) / prevPriceInUsdc) * 100;
+          console.log(`  Increase from previous tier: ${increase.toFixed(2)}%`);
+        }
       });
 
       // Mint USDC to all wallets
+      console.log("\nMinting USDC to all wallets...");
       await Promise.all(
         walletUsdcAccounts.map(account =>
           mintTo(
@@ -1439,10 +1459,12 @@ describe("scythra_presale", () => {
           )
         )
       );
+      console.log("USDC minted to all wallets");
 
       // Make purchases to reach each tier using different wallets
+      console.log("\nStarting tier-by-tier purchases...");
       for (let tier = 0; tier < 5; tier++) {
-        console.log(`\nTesting Tier ${tier}`);
+        console.log(`\n=== Testing Tier ${tier} ===`);
         
         const currentWallet = wallets[tier];
         const currentUsdcAccount = walletUsdcAccounts[tier];
@@ -1452,7 +1474,10 @@ describe("scythra_presale", () => {
         const currentTier = state.totalSold.div(TOKENS_PER_TIER);
         const amountToNextTier = TOKENS_PER_TIER.sub(state.totalSold.mod(TOKENS_PER_TIER));
         
-        console.log(`Amount needed for next tier: ${amountToNextTier.toString()}`);
+        console.log(`Current State:`);
+        console.log(`- Total Sold: ${state.totalSold.toString()}`);
+        console.log(`- Current Tier: ${currentTier.toString()}`);
+        console.log(`- Amount needed for next tier: ${amountToNextTier.toString()}`);
         
         const [userPurchase] = await anchor.web3.PublicKey.findProgramAddress(
           [Buffer.from("user_purchase"), currentWallet.publicKey.toBuffer()],
@@ -1460,6 +1485,8 @@ describe("scythra_presale", () => {
         );
         
         // Make purchase
+        console.log(`\nMaking purchase with Wallet ${tier + 1}:`);
+        console.log(`- Amount: ${amountToNextTier.toString()} tokens`);
         const tx = await program.methods
           .buyTokens(amountToNextTier)
           .accounts({
@@ -1475,6 +1502,7 @@ describe("scythra_presale", () => {
           .rpc();
 
         await waitForConfirmation(tx);
+        console.log("Purchase confirmed");
         
         // Verify new state and price
         const newState = await program.account.presaleState.fetch(presaleState);
@@ -1488,9 +1516,11 @@ describe("scythra_presale", () => {
             .div(BASIS_POINTS_DIVISOR);
         }
         
-        console.log(`New Tier: ${newTier.toString()}`);
-        console.log(`Expected Price: ${expectedPrices[newTier.toNumber()].toString()}`);
-        console.log(`Actual Price: ${actualPrice.toString()}`);
+        console.log(`\nVerifying new state:`);
+        console.log(`- New Total Sold: ${newState.totalSold.toString()}`);
+        console.log(`- New Tier: ${newTier.toString()}`);
+        console.log(`- Expected Price: ${expectedPrices[newTier.toNumber()].toString()}`);
+        console.log(`- Actual Price: ${actualPrice.toString()}`);
         
         // Verify price matches expected (allowing for small rounding differences)
         const priceDiff = actualPrice.sub(expectedPrices[newTier.toNumber()]).abs();
@@ -1498,6 +1528,7 @@ describe("scythra_presale", () => {
           priceDiff.lte(new anchor.BN(1)),
           `Price mismatch at tier ${newTier.toString()}. Expected: ${expectedPrices[newTier.toNumber()].toString()}, Got: ${actualPrice.toString()}`
         );
+        console.log("✓ Price matches expected value");
 
         // Verify 28% increase from previous tier
         if (newTier.toNumber() > 0) {
@@ -1506,21 +1537,27 @@ describe("scythra_presale", () => {
             .mul(PRICE_INCREASE_BASIS_POINTS)
             .div(BASIS_POINTS_DIVISOR);
           
-          console.log(`Previous Tier Price: ${prevPrice.toString()}`);
-          console.log(`Expected 28% Increase: ${expectedIncrease.toString()}`);
-          console.log(`Actual Price: ${actualPrice.toString()}`);
+          console.log(`\nVerifying 28% increase from previous tier:`);
+          console.log(`- Previous Tier Price: ${prevPrice.toString()} ($${(prevPrice.toNumber() / 10000).toFixed(4)} USDC)`);
+          console.log(`- Expected 28% Increase: ${expectedIncrease.toString()} ($${(expectedIncrease.toNumber() / 10000).toFixed(4)} USDC)`);
+          console.log(`- Actual Price: ${actualPrice.toString()} ($${(actualPrice.toNumber() / 10000).toFixed(4)} USDC)`);
           
           const increaseDiff = actualPrice.sub(expectedIncrease).abs();
+          const maxAllowedDiff = new anchor.BN(1); // Allow for small rounding differences
           assert.ok(
-            increaseDiff.lte(new anchor.BN(1)),
+            increaseDiff.lte(maxAllowedDiff),
             `Price increase mismatch at tier ${newTier.toString()}. Expected: ${expectedIncrease.toString()}, Got: ${actualPrice.toString()}`
           );
+          console.log("✓ 28% increase verified");
         }
         
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      console.log("\n=== Compounded Price Increase Test Completed Successfully ===\n");
+      console.log("\n=== Compounded Price Increase Test Completed Successfully ===");
+      console.log("✓ All tiers verified");
+      console.log("✓ All price increases verified");
+      console.log("✓ All purchases successful\n");
     } catch (error) {
       console.error("\n=== Test Failed ===");
       console.error("Error details:", error);
